@@ -31,16 +31,17 @@
 
 ## 2. Errores de lógica corregidos
 | # | Archivo y método | Qué hacía mal | Pista (fila de la tabla) | Cómo lo corregí |
-| 1 |------------------|---------------|--------------------------|-----------------|
-| 2 |------------------|---------------|--------------------------|-----------------|
-| 3 |------------------|---------------|--------------------------|-----------------|
-| 4 |------------------|---------------|--------------------------|-----------------|
-| 5 |------------------|---------------|--------------------------|-----------------|
-| 6 |------------------|---------------|--------------------------|-----------------|
-| 7 |------------------|---------------|--------------------------|-----------------|
-| 8 |------------------|---------------|--------------------------|-----------------|
-| 9 |------------------|---------------|--------------------------|-----------------|
-| 10|------------------|---------------|--------------------------|-----------------|
+|---|------------------|---------------|--------------------------|-----------------|
+| 1 | Ingrediente.calcularCosto | gramos - 1000 es división entera: 600 g daban 0 y casi todos los ingredientes costaban $0 | Fichas con $0; la gallina de 1500 g costaba $18000 en vez de $27000 | gramos - 1000.0 * precioKilo |
+| 2 | Olla.agregarIngrediente | Revisaba el peso actual y no sumaba el del ingrediente nuevo, así que la olla se pasaba de la capacidad | Olla pequeña 1130/1000 g y «¿Cupo la yuca? true» | calcularPesoTotal() + nuevo.getGramos() > capacidadGramos |
+| 3 | Olla.buscarPorCodigo | Comparaba el **nombre** con el código, por eso nunca encontraba nada (tampoco detectaba códigos repetidos) | «¿Se aceptó un código repetido? true» y «Buscar PRO-001: no encontrado» | i.getCodigo().equals(codigo) |
+| 4 | Olla.calcularCostoIngredientes | El for empezaba en i = 1 y se saltaba el primer ingrediente | Costo del sancocho menor al real | Empezar en i = 0 |
+| 5 | Olla.calcularTiempoCoccion | Usaba <, devolvía el menor (siempre 0) en vez del mayor | Fichas de sancocho con 0 min | Cambié a i.minutosCoccion() > mayor |
+| 6 | Tuberculo.minutosCoccion | Valores invertidos: el duro daba 25 y el blando 40 | Papa (blanda) con 40 min y yuca (dura) con 25 min | return duro ? 40 : 25; |
+| 7 | Sancocho.estaCompleto | Mezclaba && con ||, bastaba tener condimento para estar «completo» | «¿El caldo de papa está completo? true» (no tiene proteína) | Exigir las tres condiciones con && |
+| 8 | Sancocho.esTrifasico | Contaba todos los ingredientes, no las proteínas | «¿El de gallina es trifásico? true» (solo tiene 1 proteína) | olla.contarPorCategoria("Proteína") >= 3 |
+| 9 | Pedido.calcularCosto | Los acompañamientos se sumaban una sola vez en lugar de multiplicarse por la cantidad | Mesa 1: $5700 no cuadraba con «cada plato lleva sus acompañamientos» | (precioPorción + sumaAcompanamientos) * cantidad |
+| 10 | Fonda.registrarPedido | Guardaba el pedido en la lista antes de verificar las porciones; los pedidos fallidos quedaban registrados y sumaban a las ventas | «Pedidos registrados: 4» cuando solo 3 fueron válidos | Llamar a servir(cantidad) primero y crear/agregar el Pedido solo si alcanzan |
 
 ## 3. Salida final del programa
 (pega aquí la salida completa de `java -cp out Main`, o una captura)

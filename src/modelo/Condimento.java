@@ -17,7 +17,7 @@ public class Condimento extends Ingrediente {
         int minutos;
         if (seAgregaAlFinal) {
             minutos = 5;
-        } else{
+        } else {
             minutos = 20;
         }
         return minutos;
