@@ -44,12 +44,73 @@
 | 10 | Fonda.registrarPedido | Guardaba el pedido en la lista antes de verificar las porciones; los pedidos fallidos quedaban registrados y sumaban a las ventas | «Pedidos registrados: 4» cuando solo 3 fueron válidos | Llamar a servir(cantidad) primero y crear/agregar el Pedido solo si alcanzan |
 
 ## 3. Salida final del programa
-(pega aquí la salida completa de `java -cp out Main`, o una captura)
+
+PS C:\VSCODE\ParcialPooNutresa>  & 'C:\Program Files\Eclipse Adoptium\jdk-17.0.20.101-hotspot\bin\java.exe' '-agentlib:jdwp=transport=dt_socket,server=n,suspend=y,address=localhost:56418' '-XX:+ShowCodeDetailsInExceptionMessages' '-cp' 'C:\Users\LOQ\AppData\Roaming\Code\User\workspaceStorage\8ac246a45567fe071956ff3c58938d6f\redhat.java\jdt_ws\ParcialPooNutresa_bbd6eb23\bin' 'Main' 
+=== 1. Olla del sancocho de gallina ===
+No se agregó Cebolla larga: no está fresco.
+¿Se aceptó un ingrediente que no está fresco? false
+No se agregó Ñame: el código TUB-002 ya está en la olla.
+¿Se aceptó un código repetido? false
+Olla (4470/6000 g):
+  - Proteína [PRO-001] Gallina criolla - 1500 g, $27000, 60 min
+  - Tubérculo [TUB-001] Papa pastusa - 1000 g, $3000, 25 min
+  - Tubérculo [TUB-002] Yuca - 800 g, $2800, 40 min
+  - Verdura [VER-001] Mazorca - 600 g, $2400, 30 min
+  - Verdura [VER-002] Plátano verde - 500 g, $2000, 30 min
+  - Condimento [CON-001] Cilantro - 50 g, $1000, 5 min
+  - Condimento [CON-002] Guascas - 20 g, $1000, 5 min
+
+=== 2. Olla del sancocho trifásico ===
+Olla (5450/8000 g):
+  - Proteína [PRO-101] Gallina - 1000 g, $18000, 60 min
+  - Proteína [PRO-102] Costilla de res - 1000 g, $26000, 90 min
+  - Proteína [PRO-103] Cerdo - 800 g, $17600, 90 min
+  - Tubérculo [TUB-101] Papa pastusa - 1000 g, $3000, 25 min
+  - Tubérculo [TUB-102] Yuca - 1000 g, $3500, 40 min
+  - Verdura [VER-101] Mazorca - 600 g, $2400, 30 min
+  - Condimento [CON-101] Cilantro - 50 g, $1000, 5 min
+
+=== 3. Olla pequeña (caldo de papa) ===
+No se agregó Yuca: no cabe en la olla.
+¿Cupo la yuca en la olla pequeña? false
+Olla (830/1000 g):
+  - Tubérculo [TUB-201] Papa criolla - 800 g, $4800, 25 min
+  - Condimento [CON-201] Ajo - 30 g, $600, 20 min
+
+=== 4. Sancochos ===
+Sancocho [SAN-001] Sancocho de gallina - 8 porciones, 60 min, costo $45200, plato $9040
+Sancocho [SAN-002] Sancocho trifásico - 10 porciones, 90 min, costo $80500, plato $12880
+Sancocho [SAN-003] Caldo de papa - 2 porciones, 25 min, costo $7900, plato $6320
+¿El de gallina está completo? true
+¿El caldo de papa está completo? false
+¿El de gallina es trifásico? false
+¿El trifásico es trifásico? true
+
+=== 5. Pedidos en la fonda ===
+Mesa 1: 2 x Sancocho de gallina + Arroz + Aguacate = $27080
+Mesa 2: 3 x Sancocho trifásico + Arroz + Ají = $46140
+Mesa 3: no alcanzan las porciones de Sancocho de gallina (quedan 6).
+¿Se registró el pedido de la mesa 3? false
+Mesa 4: el sancocho SAN-999 no está en el menú.
+¿Se registró el pedido de la mesa 4? false
+Mesa 5: 6 x Sancocho de gallina = $54240
+Pedidos registrados: 3
+Porciones de gallina que quedan: 0
+Ventas del día: $127460
+
+=== 6. Polimorfismo ===
+Buscar PRO-001: Gallina criolla (gallina)
+Como Identificable: SAN-002
+Tuberculo cuesta $3000
+Sancocho cuesta $45200
+Acompanamiento cuesta $2000
+Pedido cuesta $27080
+PS C:\VSCODE\ParcialPooNutresa> 
 
 ## 4. Conceptos de POO en este proyecto
 Explica brevemente (2-3 líneas cada uno) DÓNDE se usa en este código:
-- **Encapsulamiento:**
-- **Herencia:**
-- **Abstracción (clase abstracta):**
-- **Interfaz:** (hay dos, ¿qué clases implementa cada una?)
-- **Polimorfismo:** (mira la sección 6 de Main)
+- **Encapsulamiento:** Los atributos son private (p. ej. gramos, precioKilo en Ingrediente, o ingredientes en Olla) y solo se accede por getters/setters. Los setters validan (gramos y precio > 0, nombre no vacío) y Olla.getIngredientes() devuelve una copia para que nadie modifique la lista interna.
+- **Herencia:** Proteina, Tuberculo, Verdura y Condimento extienden Ingrediente y reutilizan su código, nombre, gramos, precio y calcularCosto(). Cada una agrega solo lo propio (tipo, duro, seAgregaAlFinal).
+- **Abstracción (clase abstracta):** Ingrediente es abstracta: no tiene sentido crear un «ingrediente» genérico (por eso falla new Ingrediente(...)). Declara los métodos abstractos minutosCoccion() y getCategoria(), que cada subclase está obligada a implementar.
+- **Interfaz:** Identificable (getCodigo(), obtenerFicha()) la implementan Ingrediente (y por herencia sus subclases) y Sancocho. Costeable (calcularCosto()) la implementan Ingrediente (y subclases), Sancocho, Acompanamiento y Pedido.
+- **Polimorfismo:** En la sección 6 un Identificable apunta a un Sancocho, y un ArrayList<Costeable> guarda un Tuberculo, un Sancocho, un Acompanamiento y un Pedido. Al llamar c.calcularCosto() en el bucle, Java ejecuta la versión de cada clase. También Olla guarda Ingrediente y llama minutosCoccion() sin saber el subtipo.
